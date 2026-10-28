@@ -18,8 +18,7 @@ powiązane, ale nie zawierają gotowych rozwiązań ani zadań do wykonania wcze
 |---|---|
 | Zespół i integrator Sprintu 1 | Łukasz de Sousa, Alina Shevtsova, Kateryna Borysova, Kostiantyn Feniuk |
 | Dataset (id z `docs/datasets.md`) | `iranian_churn` |
-| Źródło, licencja i cytowanie (DOI) | UCI Machine Learning Repository: [Iranian Churn Dataset](https://archive.ics.uci.edu/dataset/
-563/iranian+churn+dataset), Licencja: **CC BY 4.0**, DOI: `https://doi.org/10.24432/C5JW3Z` |
+| Źródło, licencja i cytowanie (DOI) | UCI Machine Learning Repository: [Iranian Churn Dataset](https://archive.ics.uci.edu/dataset/563/iranian+churn+dataset), Licencja: **CC BY 4.0**, DOI: `https://doi.org/10.24432/C5JW3Z` |
 | Data pobrania danych | `2026-10-28` |
 | SHA-256 pliku danych (`fingerprint.json`) | "90d5fb6bd1630cd4de4b4d28fcf8b4cb92a8f6ab7484605b0799d47386f7dbe1"
 | Dane osobowe w zbiorze i sposób postępowania | Brak danych osobowych (PII). Zbiór jest w pełni zanonimizowany i zawiera wyłącznie zagregowane cechy behawioralne oraz demograficzne klientów sieci telekomunikacyjnej. |
