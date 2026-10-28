@@ -16,15 +16,15 @@ powiązane, ale nie zawierają gotowych rozwiązań ani zadań do wykonania wcze
 
 | Pole | Wartość |
 |---|---|
-| Zespół i integrator Sprintu 1 | TODO |
-| Dataset (id z `docs/datasets.md`) | TODO |
-| Źródło, licencja i cytowanie (DOI) | TODO |
-| Data pobrania danych | TODO |
-| SHA-256 pliku danych (`fingerprint.json`) | TODO |
-| Dane osobowe w zbiorze i sposób postępowania | TODO |
-| Target i klasa pozytywna | TODO |
-| Metryka główna i uzasadnienie | TODO |
-| Użytkownik systemu i decyzja, którą wspiera model | TODO |
+| Zespół i integrator Sprintu 1 | Łukasz de Sousa, Alina Shevtsova, Kateryna Borysova, Kostiantyn Feniuk, Integrator S1: Łukasz de Sousa. |
+| Dataset (id z `docs/datasets.md`) | `iranian_churn` |
+| Źródło, licencja i cytowanie (DOI) | UCI Machine Learning Repository: [Iranian Churn Dataset](https://archive.ics.uci.edu/dataset/563/iranian+churn+dataset), Licencja: **CC BY 4.0**, DOI: `https://doi.org/10.24432/C5JW3Z` |
+| Data pobrania danych | `2026-10-28` |
+| SHA-256 pliku danych (`fingerprint.json`) | "90d5fb6bd1630cd4de4b4d28fcf8b4cb92a8f6ab7484605b0799d47386f7dbe1" |
+| Dane osobowe w zbiorze i sposób postępowania | Brak danych osobowych (PII). Zbiór jest w pełni zanonimizowany i zawiera wyłącznie zagregowane cechy behawioralne oraz demograficzne klientów sieci telekomunikacyjnej. |
+| Target i klasa pozytywna | Target: `Churn`, klasa pozytywna: `1` (odejście klienta z sieci na koniec 12. miesiąca) |
+| Metryka główna i uzasadnienie | **F1-score** - zbiór jest niezbalansowany (klasa pozytywna stanowi ok. 15,7% rekordów), przez co `accuracy` jest niemiarodajne. F1-score balansuje `recall` (wykrycie jak największej liczby odchodzących klientów) oraz `precision` (ograniczenie kosztu fałwyszwych alarmów w kampaniach utrzymaniowych). |
+| Użytkownik systemu i decyzja, którą wspiera model | **Użytkownik:** Dział utrzymania klienta (Retention / CRM) operatora telekomunikacyjnego. **Decyzja:** Wytypowanie na koniec 9. miesiąca klientów zagrożonych rezygnacją z usług (w perspektywie kolejnych 3 miesięcy) w celu skierowania do nich oferty utrzymaniowej. |
 <!-- KARTA-PROJEKTU:END -->
 
 ## Mapa projektu
