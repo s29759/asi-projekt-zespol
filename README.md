@@ -16,7 +16,7 @@ powiązane, ale nie zawierają gotowych rozwiązań ani zadań do wykonania wcze
 
 | Pole | Wartość |
 |---|---|
-| Zespół i integrator Sprintu 1 | TODO |
+| Zespół i integrator Sprintu 1 | Łukasz de Sousa, Alina Shevtsova, Kateryna Borysova, Kostiantyn Feniuk |
 | Dataset (id z `docs/datasets.md`) | `iranian_churn` |
 | Źródło, licencja i cytowanie (DOI) | UCI Machine Learning Repository: [Iranian Churn Dataset](https://archive.ics.uci.edu/dataset/
 563/iranian+churn+dataset), Licencja: **CC BY 4.0**, DOI: `https://doi.org/10.24432/C5JW3Z` |
