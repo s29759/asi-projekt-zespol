@@ -48,10 +48,38 @@ gotowy — sprawdza to `python scripts/check_dod.py`.
 <!-- DIAGRAM-V0:START -->
 ```mermaid
 flowchart LR
-    data["TODO: źródło danych"] --> model["TODO: kolejne elementy systemu"]
+    contract["Kontrakt danych<br/>datasets.yaml + project.yaml"]
+
+    subgraph TRAIN["Trening"]
+        src["UCI Iranian Churn"] -->|download_data.py| raw["Customer Churn.csv<br/>poza Git, SHA-256"]
+        raw --> norm1["input normalization"]
+        norm1 --> filt["training-only filtering"]
+        filt --> split["make_xy + split"]
+        split --> fit["Pipeline: model preprocessing<br/>+ LogisticRegression<br/>notebook 02"]
+        fit --> metrics["metrics.json"]
+    end
+
+    fit --> artifact["artefakt modelu<br/>S3"]
+    contract -.-> norm1
+
+    subgraph CLOUD["Cloud Run, S6"]
+        user["Użytkownik"] --> ui["UI, S5"]
+        ui -->|cechy klienta| api["API, S4<br/>walidacja → input normalization<br/>→ predict_proba"]
+        api -->|szansa na odejście| ui
+    end
+
+    artifact -->|wczytany raz| api
+    contract -.-> api
+    api --> db[("Postgres<br/>zapis predykcji")]
+
+    classDef planned stroke-dasharray:5 5
+    class artifact,user,ui,api,db planned
 ```
 
-TODO: krótki opis diagramu (3–5 zdań).
+Dane z UCI (Iranian Churn) pobieramy skryptem i nie trzymamy ich w Gitcie. Kontrakt danych jest w `datasets.yaml` i `project.yaml`.
+Przy treningu robimy input normalization i training-only filtering, potem split na train i test.
+Preprocessing jest w sklearn Pipeline razem z LogisticRegression, więc uczy się tylko na train.
+Po Sprincie 1 mamy trening i `metrics.json`. Przerywane ramki to plan na S3-S6: artefakt modelu, API, UI, Postgres i Cloud Run.
 <!-- DIAGRAM-V0:END -->
 
 ## Historia zmian architektury
