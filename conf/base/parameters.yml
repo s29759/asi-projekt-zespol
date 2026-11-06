@@ -1,4 +1,14 @@
 # Sprint 2 — parametry pipeline'u.
 # TODO (zespół): dodaj test_size, random_state i inne parametry zgodne
 # z project.yaml oraz kontraktem wybranego datasetu.
-{}
+dataset_name: iranian_churn
+target_column: Churn
+
+split:
+  test_size: 0.2
+  random_state: 42
+  stratify: true
+
+model:
+  random_state: 42
+  max_iter: 1000
