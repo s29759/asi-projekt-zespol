@@ -12,3 +12,5 @@ split:
 model:
   random_state: 42
   max_iter: 1000
+
+data_mode: full
