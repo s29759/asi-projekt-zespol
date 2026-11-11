@@ -182,3 +182,32 @@ z tych elementów.
 Ogólną architekturę warstw opisuje [`docs/architecture.md`](docs/architecture.md).
 Przypięte instalacje kolejnych sprintów: `requirements/preflight-s2.txt` (Kedro, pod koniec S1)
 i `requirements/preflight-s3.txt` (W&B i AutoGluon, pod koniec S2).
+
+## Kedro quickstart
+
+Instrukcja uruchomienia reprodukowalnego pipeline'u przy użyciu frameworka Kedro.
+
+### 1. Przygotowanie środowiska
+```bash
+python -m pip install -r requirements/preflight-s2.txt -c constraints.txt
+python -m pip install --no-deps -e .
+```
+
+### 2. Pobranie danych
+```bash
+python scripts/download_data.py
+```
+
+### 3. Uruchomienie pipeline'u
+* Uruchomienie na pełnych danych:
+  ```bash
+  kedro run
+  ```
+* Uruchomienie na próbce w środowisku CI:
+  ```bash
+  kedro run --env ci
+  ```
+
+### 4. Wygenerowane artefakty
+* Model: `data/06_models/model.pkl`
+* Metryki: `metrics.json`
