@@ -4,7 +4,7 @@
 # Użyj nazw klas zakończonych na Dataset, zgodnie z wersją Kedro.
 raw_data:
   type: pandas.CSVDataset
-  filepath: data/01_raw/iranian_churn.csv
+  filepath: data/01_raw/iranian_churn/Customer Churn.csv
 
 processed_data:
   type: pandas.CSVDataset
