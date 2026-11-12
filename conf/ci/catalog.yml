@@ -1,0 +1,19 @@
+# Środowisko ci: te same pipeline'y, ale na próbce CI.
+# Wyjścia idą do data/ (poza Gitem), żeby nie nadpisać metrics.json z pełnych danych.
+raw_data:
+  type: pandas.CSVDataset
+  filepath: data/01_raw/sample.csv
+
+processed_data:
+  type: pandas.CSVDataset
+  filepath: data/02_intermediate/processed_data_ci.csv
+
+trained_model:
+  type: pickle.PickleDataset
+  filepath: data/06_models/model_ci.pkl
+
+metrics:
+  type: json.JSONDataset
+  filepath: data/08_reporting/metrics_ci.json
+  save_args:
+    indent: 2

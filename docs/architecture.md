@@ -87,3 +87,4 @@ Po Sprincie 1 mamy trening i `metrics.json`. Przerywane ramki to plan na S3-S6: 
 | Sprint | Zmiana | Powiązany ADR |
 |---|---|---|
 | S1 | diagram v0 | — |
+| S2 | trening z notebooka przeniesiony do Kedro (`data_processing`, `data_science`) | [ADR-1](adr/0001-gdzie-zyje-przetwarzanie.md) |
