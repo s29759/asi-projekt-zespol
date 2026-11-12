@@ -210,4 +210,5 @@ python scripts/download_data.py
 
 ### 4. Wygenerowane artefakty
 * Model: `data/06_models/model.pkl`
-* Metryki: `metrics.json`
+* Metryki: `data/08_reporting/metrics.json` (poza Gitem, źródło prawdy od S2)
+* `metrics.json` w katalogu głównym to zatwierdzony wynik z pełnych danych; po zmianie modelu kopiujemy go z `data/08_reporting/`

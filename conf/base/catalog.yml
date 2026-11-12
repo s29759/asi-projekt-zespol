@@ -16,6 +16,6 @@ trained_model:
 
 metrics:
   type: json.JSONDataset
-  filepath: metrics.json
+  filepath: data/08_reporting/metrics.json
   save_args:
     indent: 2
