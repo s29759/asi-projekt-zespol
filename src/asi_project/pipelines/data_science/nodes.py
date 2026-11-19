@@ -40,6 +40,7 @@ def split_data(
 def train_models(
     X_train: pd.DataFrame,
     y_train: pd.Series,
+    model_params: dict,
 ):
 
     config = load_project_config()
@@ -47,6 +48,8 @@ def train_models(
     model = build_baseline_pipeline(
         numeric_features=config.numeric_features,
         categorical_features=config.categorical_features,
+        max_iter=int(model_params["max_iter"]),
+        random_state=int(model_params["random_state"]),
     )
     model.fit(X_train, y_train)
 

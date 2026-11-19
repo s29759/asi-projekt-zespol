@@ -17,7 +17,10 @@ def make_dummy() -> DummyClassifier:
 def build_baseline_pipeline(
     numeric_features: Sequence[str],
     categorical_features: Sequence[str],
+    max_iter: int = 1000,
+    random_state: int = 42,
 ) -> Pipeline:
+    """W Kedro max_iter i random_state przychodzą z conf/base/parameters.yml (params:model)."""
 
     numeric_pipeline = Pipeline(
         steps=[
@@ -46,8 +49,8 @@ def build_baseline_pipeline(
             (
                 "classifier",
                 LogisticRegression(
-                    max_iter=1000,
-                    random_state=42,
+                    max_iter=max_iter,
+                    random_state=random_state,
                 ),
             ),
         ]
