@@ -13,6 +13,7 @@ from asi_project.pipelines.data_processing.nodes import (
 from asi_project.pipelines.data_science.nodes import evaluate_models, split_data, train_models
 
 SPLIT_PARAMS = {"test_size": 0.2, "random_state": 42}
+MODEL_PARAMS = {"max_iter": 1000, "random_state": 42}
 
 
 @pytest.fixture(scope="module")
@@ -56,15 +57,23 @@ def test_split_jest_powtarzalny(processed_sample, split):
 
 def test_train_models_zwraca_wytrenowane_modele(split):
     X_train, X_test, y_train, _ = split
-    model, dummy_model = train_models(X_train, y_train)
+    model, dummy_model = train_models(X_train, y_train, MODEL_PARAMS)
     for fitted in (model, dummy_model):
         predictions = fitted.predict(X_test)
         assert len(predictions) == len(X_test)
 
 
+def test_train_models_bierze_parametry_z_konfiguracji(split):
+    X_train, _, y_train, _ = split
+    model, _ = train_models(X_train, y_train, {"max_iter": 321, "random_state": 7})
+    classifier = model.named_steps["classifier"]
+    assert classifier.max_iter == 321
+    assert classifier.random_state == 7
+
+
 def test_evaluate_models_zwraca_poprawny_rekord_metryk(split, registry, project_config):
     X_train, X_test, y_train, y_test = split
-    model, dummy_model = train_models(X_train, y_train)
+    model, dummy_model = train_models(X_train, y_train, MODEL_PARAMS)
 
     metrics = evaluate_models(model, dummy_model, X_train, X_test, y_test, SPLIT_PARAMS, "sample")
 
