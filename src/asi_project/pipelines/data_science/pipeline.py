@@ -27,6 +27,7 @@ def create_pipeline(**kwargs) -> Pipeline:
                 inputs=[
                     "X_train",
                     "y_train",
+                    "params:model",
                 ],
                 outputs=[
                     "trained_model",
