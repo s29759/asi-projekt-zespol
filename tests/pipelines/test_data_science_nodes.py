@@ -75,7 +75,9 @@ def test_evaluate_models_zwraca_poprawny_rekord_metryk(split, registry, project_
     X_train, X_test, y_train, y_test = split
     model, dummy_model = train_models(X_train, y_train, MODEL_PARAMS)
 
-    metrics = evaluate_models(model, dummy_model, X_train, X_test, y_test, SPLIT_PARAMS, "sample")
+    metrics = evaluate_models(
+        model, dummy_model, X_train, X_test, y_test, SPLIT_PARAMS, MODEL_PARAMS, "sample"
+    )
 
     contract = registry[project_config.dataset_id]
     assert validate_metrics_record(metrics, contract) == []

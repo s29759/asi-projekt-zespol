@@ -1,2 +1,7 @@
 # Środowisko ci: metryki z próbki oznaczamy jako sample.
 data_mode: sample
+
+wandb:
+  enabled: false
+  entity: ""
+  project: "asi-project-ci"

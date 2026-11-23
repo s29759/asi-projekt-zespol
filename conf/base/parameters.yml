@@ -14,3 +14,8 @@ model:
   max_iter: 1000
 
 data_mode: full
+
+wandb:
+  enabled: true
+  entity: "s29759-asi-project"
+  project: "asi-projekt"

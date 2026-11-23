@@ -1,5 +1,3 @@
-"""Kedro pipeline for data splitting, training and evaluation."""
-
 from kedro.pipeline import Pipeline, node, pipeline
 
 from .nodes import evaluate_models, split_data, train_models
@@ -44,7 +42,9 @@ def create_pipeline(**kwargs) -> Pipeline:
                     "X_test",
                     "y_test",
                     "params:split",
+                    "params:model",
                     "params:data_mode",
+                    "params:wandb",
                 ],
                 outputs="metrics",
                 name="evaluate_models_node",
