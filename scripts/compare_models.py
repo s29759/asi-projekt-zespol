@@ -1,3 +1,6 @@
+from statistics import median
+from time import perf_counter
+
 import pandas as pd
 
 from asi_project.metrics import compute_metrics
@@ -25,6 +28,14 @@ def main():
 
     print(f"Train: {len(X_train)}, test: {len(X_test)}")
     print(f"LogisticRegression F1: {metrics['f1']:.4f}")
+
+    timings_ms = []
+    for _ in range(30):
+        start = perf_counter()
+        model.predict(X_test)
+        timings_ms.append((perf_counter() - start) * 1000)
+
+    print(f"Prediction time: {median(timings_ms):.3f} ms / {len(X_test)} rows")
 
 
 if __name__ == "__main__":
