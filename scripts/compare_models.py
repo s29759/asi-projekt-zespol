@@ -1,3 +1,5 @@
+import subprocess
+import sys
 from pathlib import Path
 from statistics import median
 from tempfile import TemporaryDirectory
@@ -52,8 +54,16 @@ def main():
             metrics=metrics,
         )
         size_bytes = sum(path.stat().st_size for path in package_dir.rglob("*") if path.is_file())
+        probe_path = Path(__file__).with_name("measure_model_memory.py")
+        memory_bytes = int(
+            subprocess.check_output(
+                [sys.executable, str(probe_path), str(package_dir)],
+                text=True,
+            ).strip()
+        )
 
     print(f"Model package size: {size_bytes} bytes ({size_bytes / 1024:.2f} KiB)")
+    print(f"Model loading RSS change: {memory_bytes / 1024**2:.2f} MiB")
 
 
 if __name__ == "__main__":
