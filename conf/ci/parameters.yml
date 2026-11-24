@@ -5,3 +5,6 @@ wandb:
   enabled: false
   entity: ""
   project: "asi-project-ci"
+
+autogluon:
+  enabled: false
