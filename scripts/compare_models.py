@@ -1,3 +1,4 @@
+import argparse
 import subprocess
 import sys
 from pathlib import Path
@@ -47,6 +48,12 @@ def benchmark_package(package_dir, X_test, y_test):
 
 
 def main():
+    parser = argparse.ArgumentParser()
+    parser.add_argument(
+        "packages", nargs="*", type=Path, help="Candidate model package directories"
+    )
+    args = parser.parse_args()
+
     raw_data = pd.read_csv("data/01_raw/iranian_churn/Customer Churn.csv")
     validated_data = validate_contract(raw_data)
     normalized_data = apply_input_normalization(validated_data)
@@ -71,6 +78,10 @@ def main():
             positive_class=1,
             metrics=metrics,
         )
+        benchmark_package(package_dir, X_test, y_test)
+
+    for package_dir in args.packages:
+        print(f"\nPackage: {package_dir}")
         benchmark_package(package_dir, X_test, y_test)
 
 
