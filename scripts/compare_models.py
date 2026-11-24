@@ -1,9 +1,12 @@
+from pathlib import Path
 from statistics import median
+from tempfile import TemporaryDirectory
 from time import perf_counter
 
 import pandas as pd
 
 from asi_project.metrics import compute_metrics
+from asi_project.model_package import save_model_package
 from asi_project.pipelines.data_processing.nodes import (
     apply_input_normalization,
     apply_training_filter,
@@ -36,6 +39,21 @@ def main():
         timings_ms.append((perf_counter() - start) * 1000)
 
     print(f"Prediction time: {median(timings_ms):.3f} ms / {len(X_test)} rows")
+
+    with TemporaryDirectory() as temp_dir:
+        package_dir = Path(temp_dir) / "baseline"
+        save_model_package(
+            model=model,
+            package_dir=package_dir,
+            model_name="logistic_regression",
+            features=X_train.columns.tolist(),
+            target="Churn",
+            positive_class=1,
+            metrics=metrics,
+        )
+        size_bytes = sum(path.stat().st_size for path in package_dir.rglob("*") if path.is_file())
+
+    print(f"Model package size: {size_bytes} bytes ({size_bytes / 1024:.2f} KiB)")
 
 
 if __name__ == "__main__":
