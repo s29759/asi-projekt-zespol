@@ -1,4 +1,5 @@
 from dataclasses import replace
+from pathlib import Path
 
 import pandas as pd
 
@@ -124,3 +125,73 @@ def evaluate_models(
         )
 
     return metrics
+
+
+def train_autogluon(
+    X_train: pd.DataFrame,
+    y_train: pd.Series,
+    X_test: pd.DataFrame,
+    y_test: pd.Series,
+    autogluon_params: dict,
+    data_mode: str,
+    wandb_params: dict | None = None,
+) -> dict:
+
+    if not autogluon_params.get("enabled", False):
+        return {}
+
+    from autogluon.tabular import TabularPredictor
+
+    config = load_project_config()
+    contract = get_contract(config)
+    label = contract.target
+    train_data = X_train.copy()
+    train_data[label] = y_train.to_numpy()
+
+    save_path = Path(autogluon_params["path"])
+    eval_metric = autogluon_params.get("eval_metric", "f1")
+    wb_cfg = wandb_params or {}
+
+    results = {}
+    for name, cfg in autogluon_params["configurations"].items():
+        presets = str(cfg["presets"])
+        time_limit = int(cfg["time_limit"])
+
+        predictor = TabularPredictor(
+            label=label,
+            problem_type="binary",
+            eval_metric=eval_metric,
+            path=str(save_path / name),
+        )
+        predictor.fit(
+            train_data,
+            presets=presets,
+            time_limit=time_limit,
+        )
+
+        metrics = compute_metrics(y_test, predictor.predict(X_test))
+        results[name] = metrics
+
+        if wb_cfg.get("enabled", False) and data_mode == "full":
+            run_params = {
+                "presets": presets,
+                "time_limit": time_limit,
+                "eval_metric": eval_metric,
+                "best_model": predictor.model_best,
+                "n_train": len(X_train),
+                "n_test": len(X_test),
+                "n_features": len(config.model_features),
+            }
+            log_wandb_run(
+                run_name=f"autogluon-{name}",
+                model_name=f"autogluon_{name}",
+                params=run_params,
+                metrics=metrics,
+                data_mode=data_mode,
+                dataset_name=contract.dataset_id,
+                entity=wb_cfg.get("entity") or None,
+                project=wb_cfg.get("project") or None,
+                tags=["autogluon", name, data_mode],
+            )
+
+    return results

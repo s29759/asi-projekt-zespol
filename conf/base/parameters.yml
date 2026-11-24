@@ -19,3 +19,15 @@ wandb:
   enabled: true
   entity: "s29759-asi-project"
   project: "asi-projekt"
+
+autogluon:
+  enabled: true
+  path: data/06_models/autogluon
+  eval_metric: f1
+  configurations:
+    medium_60s:
+      presets: medium
+      time_limit: 60
+    best_960s:
+      presets: best
+      time_limit: 960
