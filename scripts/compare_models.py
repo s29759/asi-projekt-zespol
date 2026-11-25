@@ -7,9 +7,10 @@ from tempfile import TemporaryDirectory
 from time import perf_counter
 
 import pandas as pd
+from measure_model_memory import load_candidate
 
 from asi_project.metrics import compute_metrics
-from asi_project.model_package import load_model_package, save_model_package
+from asi_project.model_package import save_model_package
 from asi_project.pipelines.data_processing.nodes import (
     apply_input_normalization,
     apply_training_filter,
@@ -18,9 +19,10 @@ from asi_project.pipelines.data_processing.nodes import (
 from asi_project.pipelines.data_science.nodes import split_data, train_models
 
 
-def benchmark_package(package_dir, X_test, y_test):
-    model, metadata = load_model_package(package_dir)
-    features = X_test.loc[:, metadata["features"]]
+def benchmark_package(model_dir, X_test, y_test):
+    model, metadata = load_candidate(model_dir)
+    feature_names = metadata.get("features", X_test.columns)
+    features = X_test.loc[:, feature_names]
 
     predictions = model.predict(features)
     metrics = compute_metrics(y_test, predictions)
@@ -31,26 +33,29 @@ def benchmark_package(package_dir, X_test, y_test):
         model.predict(features)
         timings_ms.append((perf_counter() - start) * 1000)
 
-    size_bytes = sum(path.stat().st_size for path in package_dir.rglob("*") if path.is_file())
+    size_bytes = sum(path.stat().st_size for path in model_dir.rglob("*") if path.is_file())
 
     probe_path = Path(__file__).with_name("measure_model_memory.py")
     memory_bytes = int(
         subprocess.check_output(
-            [sys.executable, str(probe_path), str(package_dir)],
+            [sys.executable, str(probe_path), str(model_dir)],
             text=True,
         ).strip()
     )
 
     print(f"{metadata['model_name']} F1: {metrics['f1']:.4f}")
     print(f"Prediction time: {median(timings_ms):.3f} ms / {len(features)} rows")
-    print(f"Model package size: {size_bytes} bytes ({size_bytes / 1024:.2f} KiB)")
+    print(f"Saved model size: {size_bytes} bytes ({size_bytes / 1024:.2f} KiB)")
     print(f"Model loading RSS change: {memory_bytes / 1024**2:.2f} MiB")
 
 
 def main():
     parser = argparse.ArgumentParser()
     parser.add_argument(
-        "packages", nargs="*", type=Path, help="Candidate model package directories"
+        "model_dirs",
+        nargs="*",
+        type=Path,
+        help="Directories containing saved AutoGluon models or model packages",
     )
     args = parser.parse_args()
 
@@ -80,9 +85,9 @@ def main():
         )
         benchmark_package(package_dir, X_test, y_test)
 
-    for package_dir in args.packages:
-        print(f"\nPackage: {package_dir}")
-        benchmark_package(package_dir, X_test, y_test)
+    for model_dir in args.model_dirs:
+        print(f"\nModel directory: {model_dir}")
+        benchmark_package(model_dir, X_test, y_test)
 
 
 if __name__ == "__main__":
