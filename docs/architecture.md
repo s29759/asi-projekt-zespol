@@ -88,3 +88,4 @@ Po Sprincie 1 mamy trening i `metrics.json`. Przerywane ramki to plan na S3-S6: 
 |---|---|---|
 | S1 | diagram v0 | — |
 | S2 | trening z notebooka przeniesiony do Kedro (`data_processing`, `data_science`) | [ADR-1](adr/0001-gdzie-zyje-przetwarzanie.md) |
+| S3 | Kedro trenuje modele, a `scripts/compare_models.py` porównuje zapisane modele. Wybrany model trafia do API jako W&B Artifact z aliasem `production`. | [ADR-2](adr/0002-wybor-modelu-produkcyjnego.md) |
