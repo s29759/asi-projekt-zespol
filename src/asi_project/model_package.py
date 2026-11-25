@@ -48,7 +48,9 @@ def save_model_package(
 
     if _is_autogluon_predictor(model):
         model_format = "autogluon"
-        model.save(str(target_dir / AUTOGLUON_DIRNAME))
+        # TabularPredictor.save() nie przyjmuje ścieżki (zapisuje w miejscu treningu),
+        # więc kopiujemy predyktor do pakietu: tylko modele potrzebne do predykcji.
+        model.clone_for_deployment(path=str(target_dir / AUTOGLUON_DIRNAME), dirs_exist_ok=True)
     else:
         model_format = "pickle"
         with (target_dir / MODEL_FILENAME).open("wb") as f:
