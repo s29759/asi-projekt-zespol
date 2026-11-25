@@ -25,15 +25,17 @@ def benchmark_package(model_dir, X_test, y_test):
     features = X_test.loc[:, feature_names]
 
     predictions = model.predict(features)
-    metrics = compute_metrics(y_test, predictions)
+    f1 = compute_metrics(y_test, predictions)["f1"]
 
     timings_ms = []
     for _ in range(30):
         start = perf_counter()
         model.predict(features)
         timings_ms.append((perf_counter() - start) * 1000)
+    prediction_ms = median(timings_ms)
 
     size_bytes = sum(path.stat().st_size for path in model_dir.rglob("*") if path.is_file())
+    size_mib = size_bytes / 1024**2
 
     probe_path = Path(__file__).with_name("measure_model_memory.py")
     memory_bytes = int(
@@ -42,11 +44,35 @@ def benchmark_package(model_dir, X_test, y_test):
             text=True,
         ).strip()
     )
+    memory_mib = memory_bytes / 1024**2
 
-    print(f"{metadata['model_name']} F1: {metrics['f1']:.4f}")
-    print(f"Prediction time: {median(timings_ms):.3f} ms / {len(features)} rows")
+    model_name = metadata["model_name"]
+    print(f"{model_name} F1: {f1:.4f}")
+    print(f"Prediction time: {prediction_ms:.3f} ms / {len(features)} rows")
     print(f"Saved model size: {size_bytes} bytes ({size_bytes / 1024:.2f} KiB)")
-    print(f"Model loading RSS change: {memory_bytes / 1024**2:.2f} MiB")
+    print(f"Model loading RSS change: {memory_mib:.2f} MiB")
+
+    return f"| {model_name} | {f1:.4f} | {prediction_ms:.3f} | {size_mib:.4f} | {memory_mib:.2f} |"
+
+
+def write_report(output_path, rows, test_size):
+    report = [
+        "# Porównanie modeli — Sprint 3",
+        "",
+        f"Wspólny zbiór testowy: {test_size} rekordów. F1 dla klasy `Churn=1`.",
+        "",
+        "| Model | F1 | Czas predykcji [ms / zbiór testowy] | Rozmiar [MiB] | Przyrost RSS [MiB] |",
+        "| --- | ---: | ---: | ---: | ---: |",
+        *rows,
+        "",
+        "Czas predykcji to mediana z 30 wywołań po rozgrzewce na całym zbiorze testowym.",
+        "Rozmiar obejmuje wszystkie pliki pakietu baseline lub katalogu AutoGluon.",
+        "Przyrost RSS zmierzono po wczytaniu modelu w osobnym procesie,",
+        "przed pierwszą predykcją. Pomiar obejmuje biblioteki wczytane w tym kroku.",
+        "",
+    ]
+    output_path.write_text("\n".join(report), encoding="utf-8")
+    print(f"\nMarkdown report saved to {output_path}")
 
 
 def main():
@@ -57,6 +83,7 @@ def main():
         type=Path,
         help="Directories containing saved AutoGluon models or model packages",
     )
+    parser.add_argument("--output", type=Path, help="Path to the Markdown report")
     args = parser.parse_args()
 
     raw_data = pd.read_csv("data/01_raw/iranian_churn/Customer Churn.csv")
@@ -83,11 +110,14 @@ def main():
             positive_class=1,
             metrics=metrics,
         )
-        benchmark_package(package_dir, X_test, y_test)
+        rows = [benchmark_package(package_dir, X_test, y_test)]
 
     for model_dir in args.model_dirs:
         print(f"\nModel directory: {model_dir}")
-        benchmark_package(model_dir, X_test, y_test)
+        rows.append(benchmark_package(model_dir, X_test, y_test))
+
+    if args.output is not None:
+        write_report(args.output, rows, len(X_test))
 
 
 if __name__ == "__main__":
