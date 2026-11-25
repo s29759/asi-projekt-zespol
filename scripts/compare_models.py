@@ -7,6 +7,7 @@ from tempfile import TemporaryDirectory
 from time import perf_counter
 
 import pandas as pd
+import yaml
 from measure_model_memory import load_candidate
 
 from asi_project.metrics import compute_metrics
@@ -86,15 +87,16 @@ def main():
     parser.add_argument("--output", type=Path, help="Path to the Markdown report")
     args = parser.parse_args()
 
-    raw_data = pd.read_csv("data/01_raw/iranian_churn/Customer Churn.csv")
+    params = yaml.safe_load(Path("conf/base/parameters.yml").read_text(encoding="utf-8"))
+    catalog = yaml.safe_load(Path("conf/base/catalog.yml").read_text(encoding="utf-8"))
+    raw_data = pd.read_csv(catalog["raw_data"]["filepath"])
+
     validated_data = validate_contract(raw_data)
     normalized_data = apply_input_normalization(validated_data)
     training_data = apply_training_filter(normalized_data)
 
-    X_train, X_test, y_train, y_test = split_data(
-        training_data, {"test_size": 0.2, "random_state": 42}
-    )
-    model, _ = train_models(X_train, y_train, {"max_iter": 1000, "random_state": 42})
+    X_train, X_test, y_train, y_test = split_data(training_data, params["split"])
+    model, _ = train_models(X_train, y_train, params["model"])
     metrics = compute_metrics(y_test, model.predict(X_test))
 
     print(f"Train: {len(X_train)}, test: {len(X_test)}")
